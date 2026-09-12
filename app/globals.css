@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { margin: 0; }
+
+.app-shell {
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+  background-color: #fffefb;
+  background-image:
+    radial-gradient(ellipse at 7% 19%, rgba(224, 242, 254, 0.7), transparent 19rem),
+    radial-gradient(ellipse at 93% 81%, rgba(254, 226, 226, 0.5), transparent 21rem);
+}
+
+.app-shell::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: radial-gradient(15rem circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(186, 230, 253, 0.28), transparent 70%);
+  transition: background 130ms ease-out;
+}
+
+.interactive-backdrop {
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.result-card {
+  animation: reveal 320ms ease-out both;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .interactive-backdrop {
+    opacity: 0.35;
+  }
+}
+
+@media (hover: none) {
+  .interactive-backdrop {
+    opacity: 0.45;
+  }
+}
