@@ -23,34 +23,6 @@ python scripts/video_info.py "https://www.youtube.com/watch?v=VIDEO_ID" --output
 
 `--output` implements the optional local JSON-file save.
 
-## Deploy to Vercel
-
-The project is configured to deploy the UI and a Python function at `POST /api/video-info`. Vercel installs `yt-dlp` from `requirements.txt` and uses Python 3.14 from `.python-version`.
-
-```bash
-npm install
-npx vercel
-```
-
-Follow the CLI prompts to log in and create/link the Vercel project. Once the preview deployment works, publish it with:
-
-```bash
-npx vercel --prod
-```
-
-The Python function has a 30-second limit. A production version should still add caching and rate limits because metadata extraction depends on an external provider.
-
-### Make deployed Fetch work reliably
-
-YouTube can challenge requests from cloud-server IP addresses, which can prevent `yt-dlp` from retrieving metadata on Vercel. The deployed function therefore uses the official YouTube Data API when a server-side `YOUTUBE_API_KEY` is configured; local use continues to fall back to `yt-dlp`.
-
-1. In Google Cloud Console, create/select a project, enable **YouTube Data API v3**, and create an API key.
-2. Restrict that key to the YouTube Data API v3, then copy it.
-3. In Vercel: **Project → Settings → Environment Variables**, add `YOUTUBE_API_KEY` for Production, Preview, and Development. Do not use a `NEXT_PUBLIC_` prefix and do not commit the key to Git.
-4. Redeploy the project.
-
-The API's `videos.list` endpoint can return the required `snippet`, `contentDetails`, and `statistics` metadata in one request.
-
 ## Production notes
 
 The API route uses `spawn` with an argument array (rather than a shell command) and only permits YouTube hosts. In a deployed serverless environment I would put the extraction behind a separate Python worker/service (or a queue), add request-level rate limiting and user/IP quotas, cache results by canonical video ID with a TTL, set observability/structured error reporting, and handle yt-dlp upgrades plus provider/API policy changes. A background worker also avoids tying long external requests to the web request lifecycle.
