@@ -34,9 +34,9 @@ class handler(BaseHTTPRequestHandler):
 
         try:
             self.send_json(get_video_info(url))
-        except Exception:
+        except Exception as error:
             # Log the original error in Vercel's function logs without exposing internals to clients.
-            self.log_error("Unable to fetch YouTube metadata")
+            self.log_error("Unable to fetch YouTube metadata: %s", error)
             self.send_json({"error": "Could not fetch video metadata. Check the URL and try again."}, 502)
 
     def do_OPTIONS(self) -> None:  # noqa: N802 - required by BaseHTTPRequestHandler
